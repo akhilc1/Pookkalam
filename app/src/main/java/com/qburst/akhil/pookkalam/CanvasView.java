@@ -18,6 +18,7 @@ import android.widget.ImageView;
 
 public class CanvasView extends ImageView {
     Paint paint;
+    Canvas canvas;
     Context context;
     Point center;
     Path path;
@@ -34,35 +35,46 @@ public class CanvasView extends ImageView {
         paint.setColor(Color.BLACK);
         //paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.));
         paint.setStrokeWidth(5);
-        //paint.setStyle(Paint.Style.STROKE);
+
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        //drawInnerCircle(canvas);
-        drawOuterCircle(canvas);
+        this.canvas = canvas;
+        drawOuterCircle();
+        drawInnerCircle();
+        drawInnermostCircle();
     }
 
-    private void drawInnerCircle(Canvas canvas) {
+    private void drawInnermostCircle() {
+        paint.setColor(Color.WHITE);
+        paint.setStyle(Paint.Style.FILL);
+        canvas.drawCircle(center.x, center.y, radius / 4, paint);
+    }
+
+    private void drawInnerCircle() {
         paint.setColor(Color.RED);
+        paint.setStyle(Paint.Style.FILL);
         canvas.drawCircle(center.x, center.y, radius / 2, paint);
-        drawCircumscribedTriangle(canvas, center.x, center.y, radius / 2, paint, Color.BLUE);
-        drawInvertedTriangle(canvas, center.x, center.y, radius, paint, Color.BLUE);
+        drawCircumscribedTriangle(center.x, center.y, radius / 2, paint, Color.BLUE);
+        drawInvertedTriangle(center.x, center.y, radius/2, paint, Color.GREEN);
     }
 
-    private void drawOuterCircle(Canvas canvas) {
+    private void drawOuterCircle() {
         paint.setColor(Color.CYAN);
+        paint.setStyle(Paint.Style.FILL);
         canvas.drawCircle(center.x, center.y, radius, paint);
-        drawCircumscribedTriangle(canvas, center.x, center.y, radius, paint, Color.GREEN);
-        drawInvertedTriangle(canvas, center.x, center.y, radius, paint, Color.BLUE);
+        drawCircumscribedTriangle(center.x, center.y, radius, paint, Color.GREEN);
+        drawInvertedTriangle(center.x, center.y, radius, paint, Color.BLUE);
     }
 
-    private void drawInvertedTriangle(Canvas canvas, int x, int y, int radius, Paint paint, int color) {
+    private void drawInvertedTriangle(int x, int y, int radius, Paint paint, int color) {
         float xOffsetFromCenter = (float) (Math.cos((float) Math.PI / 6) * radius);
         float yOffsetFromCenter = (float) (Math.sin((float) Math.PI / 6) * radius);
         paint.setColor(color);
         paint.setStyle(Paint.Style.FILL);
+        path.reset();
         path.moveTo(x, y + radius);
         path.lineTo(x - xOffsetFromCenter, y - yOffsetFromCenter);
         path.lineTo(x + xOffsetFromCenter, y - yOffsetFromCenter);
@@ -83,11 +95,12 @@ public class CanvasView extends ImageView {
         Log.d(TAG, "setWidthHeight: " + radius);
     }
 
-    private void drawCircumscribedTriangle(Canvas canvas, float x, float y, int radius, Paint paint, int color) {
+    private void drawCircumscribedTriangle(float x, float y, int radius, Paint paint, int color) {
         float xOffsetFromCenter = (float) (Math.cos((float) Math.PI / 6) * radius);
         float yOffsetFromCenter = (float) (Math.sin((float) Math.PI / 6) * radius);
         paint.setColor(color);
         paint.setStyle(Paint.Style.FILL);
+        path.reset();
         path.moveTo(x, y - radius);
         path.lineTo(x - xOffsetFromCenter, y + yOffsetFromCenter);
         path.lineTo(x + xOffsetFromCenter, y + yOffsetFromCenter);
